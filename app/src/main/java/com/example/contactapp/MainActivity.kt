@@ -10,6 +10,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.contactapp.MainUI.contactPage
+import com.example.contactapp.MainUI.dailPage
+import com.example.contactapp.MainUI.recentPage
 import com.example.contactapp.ui.theme.ContactAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -18,29 +21,11 @@ class MainActivity : ComponentActivity() {
         setContent {
             ContactAppTheme {
                 // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    Greeting("Android")
-                }
+//               recentPage()
+//               contactPage()
+                dailPage()
             }
         }
     }
 }
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    ContactAppTheme {
-        Greeting("Android")
-    }
-}
