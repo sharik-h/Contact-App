@@ -1,14 +1,10 @@
 package com.example.contactapp.Database.Repository
 
-import android.util.Log
 import androidx.annotation.WorkerThread
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.asLiveData
 import com.example.contactapp.Database.Daos.ContactsDao
 import com.example.contactapp.Database.Entity.Contacts
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.forEach
+
 class ContactsRepository(private val contactDao: ContactsDao) {
 
     val allContacts =  MutableLiveData<List<Contacts>>()
