@@ -11,8 +11,6 @@ import com.example.contactapp.Database.Room.RecentRoomDatabase
 class Mainapplication: Application() {
     val contactDatabase by lazy { ContactRoomDatabase.getDatabase(this) }
     val recentDatabase by lazy { RecentRoomDatabase.getDatabase(this) }
-    val favoriteDatabase by lazy { FavoriteRoomDatabase.getDatabase(this) }
     val contactRepository by lazy { ContactsRepository(contactDatabase.contactsDao()) }
     val recentsRepository by lazy { RecentsRepository(recentDatabase.recentDao()) }
-    val favoriteRepository by lazy { FavoriteRepository(favoriteDatabase.favoriteDao()) }
 }
