@@ -47,10 +47,8 @@ fun newContactPage(viewModel: MainViewModel, navController: NavController, id: I
     val name =  remember { mutableStateOf("") }
     val phone = remember { mutableStateOf("") }
     val contact  = viewModel.contact.observeAsState()
-    if (id != null) {
-        println("this is called")
-        println(id)
-        viewModel.getContactWithId(id)
+    if (id != 0 ){
+        viewModel.getContactWithId(id!!)
     }
     if (!contact.value?.name.isNullOrEmpty() && name.value == ""){
         name.value = contact.value!!.name
@@ -119,7 +117,7 @@ fun newContactPage(viewModel: MainViewModel, navController: NavController, id: I
         Button(
             onClick = {
                 if (!name.value.isNullOrEmpty() && phone.value.length == 10){
-                    if (id != null){
+                    if (id != 0){
                         val con = Contacts(
                             id = id,
                             name = name.value,
