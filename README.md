@@ -24,13 +24,6 @@ To get started, clone this repository and import it into your IDE. Then, run the
 * Swipe
 * Animated NavigationBar
 
-## Screenshots
-
-[Screenshots of the app]
-
-## License
-
-This project is licensed under the MIT License. See the LICENSE file for more information.
 
 ## Motivation
 
@@ -38,7 +31,7 @@ This project was created in order to learn about how to perform CRUD operations 
 
 ## Contact
 
-If you have any questions or feedback, please feel free to contact me at [email address].
+If you have any questions or feedback, please feel free to contact me at mohammedsharik0123@gmail.com.
 
 
 I hope this helps! Let me know if you have any other questions.
