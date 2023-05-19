@@ -4,6 +4,7 @@ import android.provider.ContactsContract.Contacts
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,6 +20,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -28,6 +30,8 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarColors
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -35,9 +39,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.White
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -63,6 +70,9 @@ fun contactPage(viewModel: MainViewModel, navController: NavController) {
     val recents = viewModel.allRecents.observeAsState()
     val search = remember { mutableStateOf("") }
     if (search.value == "") viewModel.getAllContacts()
+    val focusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
+    val isfocused = remember { mutableStateOf(false) }
     viewModel.getAllRecents()
 
     Column(Modifier.fillMaxSize()) {
@@ -122,13 +132,31 @@ fun contactPage(viewModel: MainViewModel, navController: NavController) {
                                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 25.dp),
+                    .padding(horizontal = 25.dp)
+                    .focusRequester(focusRequester)
+                    .onFocusEvent {
+                        if (it.hasFocus){
+                            isfocused.value = true
+                            search.value = ""
+                        }
+                    },
                 shape = RoundedCornerShape(16.dp),
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     unfocusedBorderColor = Color.Transparent,
                     containerColor = Color(0xFFEBEBEB)),
                 leadingIcon = {
                     Image(painter = painterResource(id = R.drawable.search_blue), contentDescription = "")
+                },
+                trailingIcon = {
+                        if (isfocused.value){
+                            Image(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = "",
+                                modifier = Modifier.clickable {
+                                    focusManager.clearFocus()
+                                    isfocused.value = false
+                                })
+                        }
                 },
                 placeholder = {
                     Text(
