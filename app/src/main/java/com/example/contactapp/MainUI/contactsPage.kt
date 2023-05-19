@@ -59,10 +59,11 @@ import java.text.SimpleDateFormat
 fun contactPage(viewModel: MainViewModel, navController: NavController) {
 
     val quickSand = FontFamily(Font(R.font.quicksand))
-    viewModel.getAllContacts()
-    viewModel.getAllRecents()
     val contacts = viewModel.allContacts.observeAsState()
     val recents = viewModel.allRecents.observeAsState()
+    val search = remember { mutableStateOf("") }
+    if (search.value == "") viewModel.getAllContacts()
+    viewModel.getAllRecents()
 
     Column(Modifier.fillMaxSize()) {
         TopAppBar(navigationIcon = {
@@ -114,8 +115,11 @@ fun contactPage(viewModel: MainViewModel, navController: NavController) {
         Spacer(modifier = Modifier.height(10.dp))
         Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
             OutlinedTextField(
-                value = "",
-                onValueChange = {},
+                value = search.value,
+                onValueChange = {
+                    search.value = it
+                    viewModel.searchContact(search.value)
+                                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 25.dp),

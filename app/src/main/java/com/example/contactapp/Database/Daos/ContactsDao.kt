@@ -32,4 +32,7 @@ interface ContactsDao {
 
     @Query("UPDATE myContact_table SET name = :name, phone = :phone WHERE id = :id")
     suspend fun updateContact(id: Int, name: String, phone: String)
+
+    @Query("SELECT * FROM myContact_table WHERE name LIKE '%' || :searchWord || '%' COLLATE NOCASE")
+    suspend fun searchContact(searchWord: String): List<Contacts>
 }

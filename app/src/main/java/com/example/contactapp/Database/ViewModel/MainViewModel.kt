@@ -69,6 +69,9 @@ class MainViewModel(
         getAllRecents()
     }
 
+    fun searchContact(nameOrNumber: String) = viewModelScope.launch {
+        contactRepo.searchContact(nameOrNumber)
+    }
 
 }
 

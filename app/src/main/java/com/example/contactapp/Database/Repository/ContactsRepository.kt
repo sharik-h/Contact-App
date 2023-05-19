@@ -46,6 +46,9 @@ class ContactsRepository(private val contactDao: ContactsDao) {
         contactDao.updateContact(id = con.id, name = con.name, phone = con.phone)
     }
 
+    suspend fun searchContact(nameOrNumber: String) {
+       allContacts.postValue(contactDao.searchContact(nameOrNumber,))
+    }
 
 }
 
