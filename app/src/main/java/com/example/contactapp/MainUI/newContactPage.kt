@@ -1,5 +1,6 @@
 package com.example.contactapp.MainUI
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -8,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -19,24 +19,43 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import com.example.contactapp.Database.Entity.Contacts
+import com.example.contactapp.Database.ViewModel.MainViewModel
+import com.example.contactapp.Navigation.BottomBarScreen
 import com.example.contactapp.R
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview(showBackground = true)
 @Composable
-fun newContactPage() {
+fun newContactPage(viewModel: MainViewModel, navController: NavController, id: Int?) {
 
+    val context = LocalContext.current
     val quickSand = FontFamily(Font(R.font.quicksand))
+    val name =  remember { mutableStateOf("") }
+    val phone = remember { mutableStateOf("") }
+    val contact  = viewModel.contact.observeAsState()
+    if (id != null) {
+        println("this is called")
+        println(id)
+        viewModel.getContactWithId(id)
+    }
+    if (!contact.value?.name.isNullOrEmpty() && name.value == ""){
+        name.value = contact.value!!.name
+        phone.value = contact.value!!.phone
+    }
 
     Column(Modifier.fillMaxSize()) {
         TopAppBar(title = { Text(text = "New Contact", fontFamily = quickSand, fontSize = 20.sp) })
@@ -55,8 +74,8 @@ fun newContactPage() {
         }
         Spacer(modifier = Modifier.height(10.dp))
         OutlinedTextField(
-            value = "",
-            onValueChange = {},
+            value = name.value,
+            onValueChange = {name.value = it},
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 25.dp),
@@ -76,8 +95,8 @@ fun newContactPage() {
         )
         Spacer(modifier = Modifier.height(20.dp))
         OutlinedTextField(
-            value = "",
-            onValueChange = {},
+            value = phone.value,
+            onValueChange = {phone.value = it},
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 25.dp),
@@ -98,7 +117,29 @@ fun newContactPage() {
         )
         Spacer(modifier = Modifier.height(20.dp))
         Button(
-            onClick = { /*TODO*/ },
+            onClick = {
+                if (!name.value.isNullOrEmpty() && phone.value.length == 10){
+                    if (id != null){
+                        val con = Contacts(
+                            id = id,
+                            name = name.value,
+                            phone = phone.value,
+                            favorite = contact.value!!.favorite
+                        )
+                        viewModel.updateContact(con)
+                    }else{
+                        val con = Contacts(
+                            name = name.value,
+                            phone = phone.value,
+                            favorite = false
+                        )
+                        viewModel.addContact(con)
+                    }
+                    navController.navigate(BottomBarScreen.contacts.route)
+                }else{
+                    Toast.makeText(context, "Please fill the details correctly", Toast.LENGTH_SHORT).show()
+                }
+                      },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 25.dp)

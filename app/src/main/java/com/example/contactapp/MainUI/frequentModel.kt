@@ -22,9 +22,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.contactapp.R
 
-@Preview(showBackground = true)
 @Composable
-fun frequentModel() {
+fun frequentModel(name: String) {
 
     val quickSand = FontFamily(Font(R.font.quicksand))
 
@@ -34,6 +33,6 @@ fun frequentModel() {
             contentDescription = "",
             modifier = Modifier.size(60.dp).clip(RoundedCornerShape(50))
         )
-        Text(text = "Name", fontSize = 15.sp, fontFamily = quickSand)
+        Text(text = name, fontSize = 15.sp, fontFamily = quickSand)
     }
 }

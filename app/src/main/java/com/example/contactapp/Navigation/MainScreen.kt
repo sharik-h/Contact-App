@@ -31,6 +31,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.contactapp.Database.ViewModel.MainViewModel
 import com.exyte.animatednavbar.AnimatedNavigationBar
 import com.exyte.animatednavbar.animation.balltrajectory.Parabolic
 import com.exyte.animatednavbar.animation.balltrajectory.Straight
@@ -41,13 +42,13 @@ import com.exyte.animatednavbar.utils.noRippleClickable
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen() {
+fun MainScreen(viewModel: MainViewModel) {
     val navController = rememberNavController()
     Scaffold(
-        bottomBar = { bottomBar(navController = navController) }
+        bottomBar = { bottomBar(navController = navController ) }
     ) {
         val pad = it
-        bottomNavGraph(navController = navController)
+        bottomNavGraph(navController = navController, viewModel = viewModel)
     }
 }
 
@@ -93,13 +94,7 @@ fun bottomBar(navController: NavHostController) {
                            else{ MaterialTheme.colorScheme.inversePrimary }
                 )
             }
-//            AddItem(
-//                screen = screen,
-//                currentDestination = currentDestination,
-//                navController = navController,
-//            )
-
-    }
+        }
     }
 }
 

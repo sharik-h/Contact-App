@@ -1,5 +1,7 @@
 package com.example.contactapp.MainUI
 
+import android.provider.ContactsContract.Contacts
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -14,31 +16,53 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.White
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Observer
+import androidx.navigation.NavController
+import com.example.contactapp.Database.ViewModel.MainViewModel
+import com.example.contactapp.Navigation.BottomBarScreen
 import com.example.contactapp.R
+import me.saket.swipe.SwipeAction
+import me.saket.swipe.SwipeableActionsBox
+import java.sql.Time
+import java.text.SimpleDateFormat
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview(showBackground = true)
 @Composable
-fun contactPage() {
+fun contactPage(viewModel: MainViewModel, navController: NavController) {
 
     val quickSand = FontFamily(Font(R.font.quicksand))
+    viewModel.getAllContacts()
+    viewModel.getAllRecents()
+    val contacts = viewModel.allContacts.observeAsState()
+    val recents = viewModel.allRecents.observeAsState()
 
     Column(Modifier.fillMaxSize()) {
         TopAppBar(navigationIcon = {
@@ -77,12 +101,14 @@ fun contactPage() {
             fontFamily = quickSand,
             modifier = Modifier.padding(start = 15.dp)
         )
-        LazyRow(
+        if (!recents.value.isNullOrEmpty()) {
+            LazyRow(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier.padding(start = 8.dp)
-        ){
-            items(10) {
-                frequentModel()
+        ) {
+                items(recents.value!!) { recent ->
+                    frequentModel(name = recent.name ?: "")
+                }
             }
         }
         Spacer(modifier = Modifier.height(10.dp))
@@ -112,9 +138,50 @@ fun contactPage() {
         }
         Spacer(modifier = Modifier.height(10.dp))
 
-        LazyColumn{
-            items(10){
-                contactListModel()
+        if (!contacts.value.isNullOrEmpty()){
+            LazyColumn{
+                items(items = contacts.value!!){ contact ->
+                    val edit = SwipeAction(
+                        onSwipe = { navController.navigate(BottomBarScreen.add.passData(id = contact.id)) },
+                        icon ={
+                              Icon(
+                                  modifier = Modifier.padding(16.dp),
+                                  imageVector = Icons.Default.Edit,
+                                  contentDescription = "",
+                                  tint = Color.White
+                              )
+                        },
+                        background = MaterialTheme.colorScheme.primary,
+                    )
+                    val delete = SwipeAction(
+                        onSwipe = { viewModel.deleteContact(contact = contact) },
+                        icon = {
+                            Icon(
+                                modifier = Modifier.padding(16.dp),
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = "",
+                                tint = White
+                            )
+                        },
+                        background = Color.Red
+                    )
+                    SwipeableActionsBox(
+                        startActions = listOf(delete),
+                        endActions = listOf(edit),
+                        swipeThreshold = 150.dp
+                    ) {
+                        contactListModel(name = contact.name, phone = contact.phone, favorite = contact.favorite){it ->
+                            if (it == "favorite"){
+                                viewModel.updateFavorite(id = contact.id, fav = !contact.favorite)
+                            }else if (it == "call"){
+                                val currentTime = System.currentTimeMillis()
+                                val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+                                val formattedTime = sdf.format(currentTime)
+                                viewModel.addRecent(contact = contact, time = formattedTime)
+                            }
+                        }
+                    }
+                }
             }
         }
     }

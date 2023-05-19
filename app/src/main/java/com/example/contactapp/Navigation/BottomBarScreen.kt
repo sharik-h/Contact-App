@@ -34,8 +34,10 @@ sealed class BottomBarScreen(
         icon = Icons.Default.Phone
     )
     object add: BottomBarScreen(
-        route = "add",
+        route = "add?id={id}",
         title = "add",
         icon = Icons.Default.Add
-    )
+    ){
+        fun passData(id: Int = 0) = "add?id=$id"
+    }
 }
